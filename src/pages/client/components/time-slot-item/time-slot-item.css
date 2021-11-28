@@ -1,0 +1,12 @@
+.time-slot-item-container {
+  display: flex;
+  align-items: center;
+}
+
+.time-slot-item-name {
+  margin: 5px 0;
+}
+
+.time-slot-item-button {
+  margin-left: 50px;
+}

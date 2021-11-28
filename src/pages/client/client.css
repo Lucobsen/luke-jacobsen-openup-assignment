@@ -1,0 +1,18 @@
+.client-page {
+  padding: 30px;
+}
+
+.client-greeting {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.container-legend {
+  font-weight: bold;
+}
+
+.time-slot-list {
+  margin: 0;
+  padding: 0;
+  min-height: 500px;
+}
