@@ -26,6 +26,8 @@ export class TimeSlotItem extends Component<
 > {
   constructor(props: TimeSlotItemProps) {
     super(props);
+
+    this.bookAppointment = this.bookAppointment.bind(this);
   }
 
   /**
@@ -62,6 +64,18 @@ export class TimeSlotItem extends Component<
   }
 
   /**
+   * Books an appointment.
+   */
+  private async bookAppointment(): Promise<void> {
+    const timeslotId: number = this.props.slot.id;
+    const clientId: number = Number(this.props.slot.clientId);
+
+    await AppService.updateTimeslot(timeslotId, { clientId });
+
+    window.alert(`Appointment booked with ${this.state.psychologist.name}`);
+  }
+
+  /**
    * Renders the Time Slot Item Component.
    */
   public render(): JSX.Element {
@@ -81,7 +95,12 @@ export class TimeSlotItem extends Component<
           {this.state?.psychologist.name}
         </h4>
 
-        <button className="time-slot-item-button">Book</button>
+        <button
+          className="time-slot-item-button"
+          onClick={this.bookAppointment}
+        >
+          Book
+        </button>
       </div>
     );
   }
