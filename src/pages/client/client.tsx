@@ -37,11 +37,28 @@ export class ClientPage extends Component<ClientProps, ClientState> {
    */
   public async componentDidMount(): Promise<void> {
     const client: Client = await AppService.getClientData(this.props.id);
-    const timeSlots: TimeSlot[] = await AppService.getTimeslots();
+    const timeSlots: TimeSlot[] = await this.getAvailableTimeslots();
 
     this.setState({ client, timeSlots });
   }
 
+  /**
+   * Filters out booked timeslots from the full list of times.
+   * @param timeSlots - the full list of timeslots available on the site
+   * @returns a valid list of timeslots that are not booked
+   */
+  private async getAvailableTimeslots(): Promise<TimeSlot[]> {
+    const timeSlots: TimeSlot[] = await AppService.getTimeslots();
+    const availableSlots: TimeSlot[] = [];
+
+    for (let slot of timeSlots) {
+      if (slot.clientId !== "") {
+        availableSlots.push(slot);
+      }
+    }
+
+    return availableSlots;
+  }
   /**
    * Creates the TimeSlotItem elements.
    */

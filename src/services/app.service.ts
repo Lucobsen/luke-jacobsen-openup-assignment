@@ -58,4 +58,24 @@ export class AppService {
       throw new Error("Failed to fetch timeslots: " + error);
     }
   }
+
+  /**
+   * Updates a timeslot.
+   * @returns an updated timeslot
+   */
+  public static async updateTimeslot(
+    timeslotId: number,
+    updateModel: Partial<TimeSlot>
+  ): Promise<TimeSlot> {
+    try {
+      const response: AxiosResponse<TimeSlot> = await axios.patch(
+        `${baseUrl}/timeslots/${timeslotId}`,
+        updateModel
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to update timeslot: " + error);
+    }
+  }
 }
