@@ -1,24 +1,28 @@
-import axios from "axios";
 import React, { Component } from "react";
-import { TimeSlot } from "../../app.models";
+import { Client, TimeSlot } from "../../app.models";
+import { AppService } from "../../services/app.service";
 import "./client.css";
 import { TimeSlotItem } from "./components/time-slot-item/time-slot-item";
 import { UpcomingAppointmentItem } from "./components/upcoming-appointment-item/upcoming-appointment-item";
 
-type Client = {
-  id: number;
-  name: string;
-};
-
+/**
+ * Client Page Props.
+ */
 interface ClientProps {
   id: string;
 }
 
+/**
+ * Client Page State.
+ */
 interface ClientState {
   client?: Client;
   timeSlots: TimeSlot[];
 }
 
+/**
+ * The Client Page Component.
+ */
 export class ClientPage extends Component<ClientProps, ClientState> {
   constructor(props: ClientProps) {
     super(props);
@@ -29,105 +33,37 @@ export class ClientPage extends Component<ClientProps, ClientState> {
   }
 
   /**
-   *
+   * Gets the data related to the component once it mounts.
    */
-  public async componentDidMount() {
+  public async componentDidMount(): Promise<void> {
     try {
-      const client: Client = await axios.get(
-        `http://localhost:3000/clients/${this.props.id}`
-      );
-
-      const timeSlots: TimeSlot[] = await axios.get(
-        `http://localhost:3000/timeslots`
-      );
+      const client: Client = await AppService.getClientData(this.props.id);
+      const timeSlots: TimeSlot[] = await AppService.getTimeslots();
 
       this.setState({ client, timeSlots });
     } catch (error) {
-      this.setState({
-        client: {
-          id: 1,
-          name: "John Achterburg",
-        },
-        timeSlots: [
-          {
-            id: 0,
-            psychologistId: 1,
-            clientId: "",
-            startDateTime: "2021-04-11T09:00:00.0000000Z",
-            endDateTime: "2021-04-11T09:30:00.0000000Z",
-          },
-          {
-            id: 1,
-            psychologistId: 1,
-            clientId: "",
-            startDateTime: "2021-04-11T09:30:00.0000000Z",
-            endDateTime: "2021-04-11T10:00:00.0000000Z",
-          },
-          {
-            id: 2,
-            psychologistId: 1,
-            clientId: "",
-            startDateTime: "2021-04-11T10:30:00.0000000Z",
-            endDateTime: "2021-04-11T11:00:00.0000000Z",
-          },
-          {
-            id: 3,
-            psychologistId: 1,
-            clientId: "",
-            startDateTime: "2021-04-11T11:00:00.0000000Z",
-            endDateTime: "2021-04-11T11:30:00.0000000Z",
-          },
-          {
-            id: 4,
-            psychologistId: 1,
-            clientId: "",
-            startDateTime: "2021-04-11T11:30:00.0000000Z",
-            endDateTime: "2021-04-11T12:00:00.0000000Z",
-          },
-          {
-            id: 5,
-            psychologistId: 1,
-            clientId: 0,
-            startDateTime: "2021-04-11T12:00:00.0000000Z",
-            endDateTime: "2021-04-11T12:30:00.0000000Z",
-          },
-          {
-            id: 6,
-            psychologistId: 1,
-            clientId: 1,
-            startDateTime: "2021-04-11T12:30:00.0000000Z",
-            endDateTime: "2021-04-11T13:00:00.0000000Z",
-          },
-          {
-            id: 7,
-            psychologistId: 0,
-            clientId: "",
-            startDateTime: "2021-04-11T09:00:00.0000000Z",
-            endDateTime: "2021-04-11T09:30:00.0000000Z",
-          },
-          {
-            id: 8,
-            psychologistId: 0,
-            clientId: 0,
-            startDateTime: "2021-04-11T09:00:00.0000000Z",
-            endDateTime: "2021-04-11T09:30:00.0000000Z",
-          },
-        ],
-      });
-
-      //throw new Error("Failed to fetch client data!!!");
+      throw new Error("Failed to fetch client data!!!" + error);
     }
   }
 
   /**
-   * Renders the Home Component.
+   * Creates the TimeSlotItem elements.
    */
-  public render(): JSX.Element {
+  private createTimeSlotItems(): JSX.Element[] {
     const timeslots = [];
 
     for (let slot of this.state.timeSlots) {
       timeslots.push(<TimeSlotItem slot={slot} />);
     }
+
+    return timeslots;
+  }
+
+  /**
+   * Renders the Client Component.
+   */
+  public render(): JSX.Element {
+    const timeslots: JSX.Element[] = this.createTimeSlotItems();
 
     return (
       <div className="client-page">

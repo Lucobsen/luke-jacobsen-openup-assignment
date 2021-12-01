@@ -1,18 +1,24 @@
-import axios from "axios";
 import React, { Component } from "react";
 import { Psychologist, TimeSlot } from "../../../../app.models";
+import { AppService } from "../../../../services/app.service";
 import "./time-slot-item.css";
 
-type TimeSlotItemProps = {
+/**
+ * TimeSlot Item props.
+ */
+interface TimeSlotItemProps {
   slot: TimeSlot;
-};
-
-type TimeSlotItemState = {
-  psychologist: Psychologist;
-};
+}
 
 /**
- *
+ * TimeSlot Item state.
+ */
+interface TimeSlotItemState {
+  psychologist: Psychologist;
+}
+
+/**
+ * TimeSlot Item Component.
  */
 export class TimeSlotItem extends Component<
   TimeSlotItemProps,
@@ -20,35 +26,43 @@ export class TimeSlotItem extends Component<
 > {
   constructor(props: TimeSlotItemProps) {
     super(props);
-
-    this.state = {
-      psychologist: {
-        id: 0,
-        name: "Henk Snell",
-      },
-    };
   }
 
   /**
-   *
+   * Gets the data for the psychologist attached to the timeslot.
    */
-  public async componentDidMount() {
+  public async componentDidMount(): Promise<void> {
     try {
-      const psychologist: Psychologist = await axios.get(
-        `http://localhost:3000/psychologists/${this.props.slot.psychologistId}`
+      const psychologist: Psychologist = await AppService.getPsychologistData(
+        this.props.slot.psychologistId
       );
 
       this.setState({ psychologist });
     } catch (error) {
-      this.setState({
-        psychologist: {
-          id: 0,
-          name: "Henk Snell",
-        },
-      });
-
-      //throw new Error("Failed to fetch psychologist data!!!");
+      throw new Error("Failed to fetch psychologist data!!!");
     }
+  }
+
+  /**
+   * Gets the start of the timeslot in the format of an hourly string value.
+   */
+  private getStartTime(): string {
+    const startTime: string = new Date(
+      this.props.slot.startDateTime
+    ).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+    return startTime;
+  }
+
+  /**
+   * Gets the end of the timeslot in the format of an hourly string value.
+   */
+  private getEndTime(): string {
+    const endTime: string = new Date(
+      this.props.slot.endDateTime
+    ).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+    return endTime;
   }
 
   /**
@@ -56,26 +70,19 @@ export class TimeSlotItem extends Component<
    */
   public render(): JSX.Element {
     const date = new Date(this.props.slot.startDateTime);
-
-    const day = date.toLocaleDateString("en-GB", {
+    const day: string = date.toLocaleDateString("en-GB", {
       month: "long",
       day: "numeric",
     });
 
-    const startTime = new Date(
-      this.props.slot.startDateTime
-    ).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-
-    const endTime = new Date(this.props.slot.endDateTime).toLocaleTimeString(
-      "en-GB",
-      { hour: "2-digit", minute: "2-digit" }
-    );
+    const startTime: string = this.getStartTime();
+    const endTime: string = this.getEndTime();
 
     return (
       <div className="time-slot-item-container">
         <h4 className="time-slot-item-name">
           - {day} - {startTime} - {endTime} - with{" "}
-          {this.state.psychologist.name}
+          {this.state?.psychologist.name}
         </h4>
 
         <button className="time-slot-item-button">Book</button>
