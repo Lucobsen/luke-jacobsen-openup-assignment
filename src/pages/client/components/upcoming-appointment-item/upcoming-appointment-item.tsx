@@ -1,27 +1,45 @@
 import React, { Component } from "react";
-import { TimeSlot } from "../../../../app.models";
+import { Psychologist, TimeSlot } from "../../../../app.models";
+import { AppService } from "../../../../services/app.service";
 import "./upcoming-appointment-item.css";
 
-type UpcomingAppointmentProps = {
+/**
+ * Upcoming Appointment Component Props.
+ */
+interface UpcomingAppointmentProps {
   slots: TimeSlot[];
   clientId?: number | undefined;
-};
+}
 
 /**
- *
+ * Upcoming Appointment Component State.
  */
-export class UpcomingAppointmentItem extends Component<UpcomingAppointmentProps> {
+interface UpcomingAppointmentState {
+  slots: JSX.Element[];
+}
+
+/**
+ * Upcoming Appointment Item Component.
+ */
+export class UpcomingAppointmentItem extends Component<
+  UpcomingAppointmentProps,
+  UpcomingAppointmentState
+> {
   constructor(props: UpcomingAppointmentProps) {
     super(props);
+
+    this.state = {
+      slots: [],
+    };
   }
 
   /**
-   * Renders the Time Slot Item Component.
+   * Creates the appointment slot items.
    */
-  public render(): JSX.Element {
+  public async componentDidMount(): Promise<void> {
     let validSlots: JSX.Element[] = [];
 
-    this.props.slots.map((slot) => {
+    for (let slot of this.props.slots) {
       if (slot.clientId === this.props.clientId) {
         const date = new Date(slot.startDateTime);
 
@@ -40,20 +58,48 @@ export class UpcomingAppointmentItem extends Component<UpcomingAppointmentProps>
           minute: "2-digit",
         });
 
+        const psychologistName: string =
+          await this.getAppointmentPsychologistName(slot.psychologistId);
+
         validSlots.push(
           <h4 className="appointment-heading">
-            - {day} at {startTime}-{endTime} with psychologist: Bob
+            - {day} at {startTime}-{endTime} with psychologist:{" "}
+            {psychologistName}
           </h4>
         );
       }
-    });
+    }
 
+    this.setState({
+      slots: validSlots,
+    });
+  }
+
+  /**
+   * Gets the name of the psychologist who will be leading the appointment.
+   * @param psychologistId - the psychologist's ID
+   * @returns the psychologist's name
+   */
+  private async getAppointmentPsychologistName(
+    psychologistId: number
+  ): Promise<string> {
+    const psychologist: Psychologist = await AppService.getPsychologistData(
+      psychologistId
+    );
+
+    return psychologist.name;
+  }
+
+  /**
+   * Renders the Upcoming Appointmnt Component.
+   */
+  public render(): JSX.Element {
     return (
       <form>
         <fieldset>
           <legend className="container-legend">Upcomming appointments</legend>
 
-          <ul className="upcoming-appointment-list">{validSlots}</ul>
+          <ul className="upcoming-appointment-list">{this.state.slots}</ul>
         </fieldset>
       </form>
     );

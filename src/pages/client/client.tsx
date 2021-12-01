@@ -36,14 +36,10 @@ export class ClientPage extends Component<ClientProps, ClientState> {
    * Gets the data related to the component once it mounts.
    */
   public async componentDidMount(): Promise<void> {
-    try {
-      const client: Client = await AppService.getClientData(this.props.id);
-      const timeSlots: TimeSlot[] = await AppService.getTimeslots();
+    const client: Client = await AppService.getClientData(this.props.id);
+    const timeSlots: TimeSlot[] = await AppService.getTimeslots();
 
-      this.setState({ client, timeSlots });
-    } catch (error) {
-      throw new Error("Failed to fetch client data!!!" + error);
-    }
+    this.setState({ client, timeSlots });
   }
 
   /**

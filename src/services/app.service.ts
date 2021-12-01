@@ -13,11 +13,15 @@ export class AppService {
    * @returns the client data related to the ID
    */
   public static async getClientData(clientId: string): Promise<Client> {
-    const response: AxiosResponse<Client> = await axios.get(
-      `${baseUrl}/clients/${clientId}`
-    );
+    try {
+      const response: AxiosResponse<Client> = await axios.get(
+        `${baseUrl}/clients/${clientId}`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch client data: " + error);
+    }
   }
 
   /**
@@ -28,11 +32,15 @@ export class AppService {
   public static async getPsychologistData(
     psychologistId: number
   ): Promise<Psychologist> {
-    const response: AxiosResponse<Psychologist> = await axios.get(
-      `${baseUrl}/psychologists/${psychologistId}`
-    );
+    try {
+      const response: AxiosResponse<Psychologist> = await axios.get(
+        `${baseUrl}/psychologists/${psychologistId}`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch psychologist data: " + error);
+    }
   }
 
   /**
@@ -40,10 +48,14 @@ export class AppService {
    * @returns a list of the app's timeslots
    */
   public static async getTimeslots(): Promise<TimeSlot[]> {
-    const response: AxiosResponse<TimeSlot[]> = await axios.get(
-      `${baseUrl}/timeslots`
-    );
+    try {
+      const response: AxiosResponse<TimeSlot[]> = await axios.get(
+        `${baseUrl}/timeslots`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch timeslots: " + error);
+    }
   }
 }
