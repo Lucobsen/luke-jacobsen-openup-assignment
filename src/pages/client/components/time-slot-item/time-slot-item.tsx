@@ -32,15 +32,11 @@ export class TimeSlotItem extends Component<
    * Gets the data for the psychologist attached to the timeslot.
    */
   public async componentDidMount(): Promise<void> {
-    try {
-      const psychologist: Psychologist = await AppService.getPsychologistData(
-        this.props.slot.psychologistId
-      );
+    const psychologist: Psychologist = await AppService.getPsychologistData(
+      this.props.slot.psychologistId
+    );
 
-      this.setState({ psychologist });
-    } catch (error) {
-      throw new Error("Failed to fetch psychologist data!!!");
-    }
+    this.setState({ psychologist });
   }
 
   /**
